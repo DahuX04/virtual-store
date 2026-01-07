@@ -17,6 +17,19 @@ public class SwaggerConfig {
                         .title("Virtual Store API")
                         .description("Virtual Store API with spring security")
                         .version("1.0.0")
+                )
+                .addSecurityItem(new SecurityRequirement()
+                        .addList("JwtScheme")
+                )
+                .components(new Components()
+                        //JWT
+                        .addSecuritySchemes("JwtScheme",
+                                new SecurityScheme()
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .description("Authorize by a JWT token")
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")
+                        )
                 );
     }
 }
