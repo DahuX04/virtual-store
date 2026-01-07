@@ -78,8 +78,20 @@ public class SaleItemServiceImpl implements SaleItemService {
 
     public ApiResponse<List<SaleItemResponseDTO>> updateSaleItems(int id, List<SaleItemsRequestDTO> saleItemRequestDTOs){
         List<SaleItem> saleItemList = saleItemRepository.findSaleItemBySale_Id(id);
+        Product product;
         if (saleItemList.isEmpty()){
             return new ApiResponse<>("No sale items found for sale id " + id, Estatus.SUCCESS,null);
+        }
+        for(SaleItem items : saleItemList){
+            Optional<Product> optionalProduct = productRepository.findById(items.getProduct().getId());
+            if (optionalProduct.isEmpty()){
+                return new ApiResponse<>("Product with id " + items.getProduct().getId() + " not found", Estatus.ERROR,null);
+            }
+            product = optionalProduct.get();
+
+            product.setStock(product.getStock() + items.getQuantity());
+            productRepository.save(product);
+
         }
         saleItemRepository.deleteAll(saleItemList);
         return createSaleItems(saleItemRequestDTOs);

@@ -18,12 +18,10 @@ public class RegisterRequestDto {
     @Email(message = "email format is invalid")
     private String email;
 
-    @NotEmpty(message = "The email is required")
-    @Email(message = "email format is invalid")
+    @NotEmpty(message = "The name is required")
     private String name;
 
-    @NotEmpty(message = "The email is required")
-    @Email(message = "email format is invalid")
+    @NotEmpty(message = "The lastname is required")
     private String lastname;
 
     @NotEmpty(message = "The password is required")
