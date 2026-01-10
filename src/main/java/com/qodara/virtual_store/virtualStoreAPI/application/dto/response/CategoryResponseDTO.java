@@ -5,20 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProductResponseDTO {
+public class CategoryResponseDTO {
 
     private int id;
     private String name;
-    private String description;
-    private BigDecimal price;
-    private int stock;
-    private BrandResponseDTO brand;
-    private CategoryResponseDTO category;
 
 }

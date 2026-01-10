@@ -96,7 +96,7 @@ public class BrandServiceImpl implements BrandService {
 
     private void validateUpdateBrand(int id, BrandRequestDTO brandRequestDTO) {
         if (existsBrandByNameAndIdNot(brandRequestDTO.getName(), id)) {
-            throw new ValidationException("There is already a Job with the same name");
+            throw new ValidationException("There is already a Brand with the same name");
         }
     }
 

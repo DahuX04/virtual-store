@@ -9,8 +9,10 @@ import com.qodara.virtual_store.virtualStoreAPI.application.dto.response.BrandRe
 import com.qodara.virtual_store.virtualStoreAPI.application.dto.response.ProductResponseDTO;
 import com.qodara.virtual_store.virtualStoreAPI.application.services.ProductService;
 import com.qodara.virtual_store.virtualStoreAPI.domain.entities.Brand;
+import com.qodara.virtual_store.virtualStoreAPI.domain.entities.Category;
 import com.qodara.virtual_store.virtualStoreAPI.domain.entities.Product;
 import com.qodara.virtual_store.virtualStoreAPI.infraestructure.repositories.BrandRepository;
+import com.qodara.virtual_store.virtualStoreAPI.infraestructure.repositories.CategoryRepository;
 import com.qodara.virtual_store.virtualStoreAPI.infraestructure.repositories.ProductRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -24,11 +26,13 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ModelMapper modelMapper;
     private final BrandRepository brandRepository;
+    private final CategoryRepository categoryRepository;
 
-    public ProductServiceImpl(ProductRepository productRepository, ModelMapper modelMapper, BrandRepository brandRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, ModelMapper modelMapper, BrandRepository brandRepository, CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
         this.modelMapper = modelMapper;
         this.brandRepository = brandRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     public ApiResponse<ProductResponseDTO> getProductById(int id){
@@ -78,6 +82,13 @@ public class ProductServiceImpl implements ProductService {
         } else {
             product.setBrand(brandOptional.get());
         }
+        Optional<Category> categoryOptional = categoryRepository.findById(productRequestDTO.getCategoryId());
+        if (categoryOptional.isEmpty()) {
+            throw new ValidationException("The category associated with the product does not exist");
+        } else {
+            product.setCategory(categoryOptional.get());
+        }
+
         System.out.println("ID product antes de save = " + product.getId());
         productRepository.save(product);
 
@@ -100,6 +111,12 @@ public class ProductServiceImpl implements ProductService {
             } else {
                 product.setBrand(brandOptional.get());
             }
+            Optional<Category> categoryOptional = categoryRepository.findById(productRequestDTO.getCategoryId());
+            if (categoryOptional.isEmpty()) {
+                throw new ValidationException("The category associated with the product does not exist");
+            } else {
+                product.setCategory(categoryOptional.get());
+            }
             productRepository.save(product);
 
             productRepository.save(product);
@@ -120,19 +137,19 @@ public class ProductServiceImpl implements ProductService {
 
     private void validateProduct(ProductRequestDTO product) {
         if (existProductByName(product.getName())) {
-            throw new ValidationException("Brand with the same name already exists");
+            throw new ValidationException("Product with the same name already exists");
         }
         if (!brandRepository.existsById(product.getBrandId())) {
-            throw new ValidationException("The brand associated with the product does not exist");
+            throw new ValidationException("The Product associated with the product does not exist");
         }
     }
 
     private void validateUpdateProduct(int id, ProductRequestDTO productRequestDTO) {
         if (existsProductByNameAndIdNot(productRequestDTO.getName(), id)) {
-            throw new ValidationException("There is already a Job with the same name");
+            throw new ValidationException("There is already a Product with the same name");
         }
         if (!brandRepository.existsById(productRequestDTO.getBrandId())) {
-            throw new ValidationException("The brand associated with the product does not exist");
+            throw new ValidationException("The Product associated with the product does not exist");
         }
     }
 
