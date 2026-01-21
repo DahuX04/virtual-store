@@ -55,6 +55,13 @@ public class SaleItemServiceImpl implements SaleItemService {
             sale = optionalSale.get();
             product = optionalProduct.get();
 
+            if(product.getStock() == 0){
+                return new ApiResponse<>("Product id " + items.getProductId() + " is out of stock", Estatus.ERROR,null);
+            }
+            if(product.getStock() < items.getQuantity()){
+                return new ApiResponse<>("Insufficient stock for product id " + items.getProductId(), Estatus.ERROR,null);
+            }
+
             saleItem.setProduct(product);
             saleItem.setQuantity(items.getQuantity());
             saleItem.setUnitPrice(product.getPrice());
