@@ -57,6 +57,18 @@ public class ProductImageController {
         }
     }
 
+    @Operation(summary = "Create multiple product images")
+    @PostMapping(value = "/product-images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<List<ProductImageResponseDTO>>> saveProductImages(List<MultipartFile> files, String name, int product_id) {
+        try {
+            var res = productImageService.saveProductImages(files, name, product_id);
+            return new ResponseEntity<>(res, HttpStatus.CREATED);
+        } catch (Exception e) {
+            var res = new ApiResponse<List<ProductImageResponseDTO>>("Error saving product images: " + e.getMessage(), Estatus.ERROR, null);
+            return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @Operation(summary = "Update product image")
     @PutMapping(value = "/product-image/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ProductImageResponseDTO>> updateProductImage(int id, MultipartFile file, String name, int product_id) {

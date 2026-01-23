@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,6 +84,33 @@ public class ProductImageServiceImpl implements ProductImageService {
         productImageRepository.save(productImage);
         var productImageResponse = modelMapper.map(productImage, ProductImageResponseDTO.class);
         return new ApiResponse<>("Product Image saved successfully", Estatus.SUCCESS, productImageResponse);
+    }
+
+    @Override
+    public ApiResponse<List<ProductImageResponseDTO>> saveProductImages (List<MultipartFile> files, String name, int product_id) throws Exception {
+        Optional<Product> ProductOptional = productRepository.findById(product_id);
+        if (ProductOptional.isEmpty()){
+            return new ApiResponse<>("Product not found", Estatus.ERROR, null);
+        }
+        Product product = ProductOptional.get();
+        List<ProductImage> productImageList = new ArrayList<>();
+        int i = 1;
+        for (MultipartFile file : files) {
+            String publicUrl = generatePublicUrl(file);
+            String imageName = name + " " + i++;
+            ProductImage productImage = ProductImage.builder()
+                    .name(imageName)
+                    .url(publicUrl)
+                    .product(product)
+                    .build();
+
+            productImageList.add(productImage);
+        }
+        productImageRepository.saveAll(productImageList);
+        List<ProductImageResponseDTO> response = productImageList.stream()
+                .map(image -> modelMapper.map(image, ProductImageResponseDTO.class))
+                .toList();
+        return new ApiResponse<>("Product Images saved successfully", Estatus.SUCCESS, response);
     }
 
     @Override

@@ -11,6 +11,7 @@ public interface ProductImageService {
     ApiResponse<ProductImageResponseDTO> getProductImageById (int id);
     ApiResponse<List<ProductImageResponseDTO>> getAllProductImages ();
     ApiResponse<ProductImageResponseDTO> saveProductImage (MultipartFile file, String name, int product_id) throws Exception;
+    ApiResponse<List<ProductImageResponseDTO>> saveProductImages (List<MultipartFile> files, String name, int product_id) throws Exception;
     ApiResponse<ProductImageResponseDTO> updateProductImage (int id, MultipartFile file, String name, int product_id) throws Exception;
     ApiResponse<ProductImageResponseDTO> updateOnlyProductImage (int id, MultipartFile file) throws Exception;
     ApiResponse<ProductImageResponseDTO> updateProductImageData (int id, String name, int product_id);
