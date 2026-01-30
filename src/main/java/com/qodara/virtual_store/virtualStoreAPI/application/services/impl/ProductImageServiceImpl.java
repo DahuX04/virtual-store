@@ -126,6 +126,7 @@ public class ProductImageServiceImpl implements ProductImageService {
         }
 
         ProductImage productImage = productImageOptional.get();
+        deleteFromFirebaseByUrl(productImage.getUrl());
         String publicUrl = generatePublicUrl(file, productOptional.get().getId());
 
         productImage.setName(name);
@@ -145,6 +146,7 @@ public class ProductImageServiceImpl implements ProductImageService {
         }
 
         ProductImage productImage = productImageOptional.get();
+        deleteFromFirebaseByUrl(productImage.getUrl());
         String publicUrl = generatePublicUrl(file, productImage.getProduct().getId());
 
         productImage.setUrl(publicUrl);
@@ -206,7 +208,6 @@ public class ProductImageServiceImpl implements ProductImageService {
 
 
     private String extractObjectNameFromFirebaseUrl(String url) {
-        // Busca el segmento "/o/" y corta hasta el "?"
         int oIndex = url.indexOf("/o/");
         if (oIndex == -1) {
             throw new IllegalArgumentException("URL no válida de Firebase Storage: falta '/o/'");
@@ -226,7 +227,6 @@ public class ProductImageServiceImpl implements ProductImageService {
         Blob blob = StorageClient.getInstance().bucket().get(objectName);
 
         if (blob == null) {
-            // El archivo no existe en el bucket (o el nombre no coincide)
             throw new IllegalStateException("No se encontró el archivo en Firebase Storage: " + objectName);
         }
 
@@ -240,10 +240,7 @@ public class ProductImageServiceImpl implements ProductImageService {
         String original = file.getOriginalFilename() != null ? file.getOriginalFilename() : "image";
         String safeName = sanitizeFilename(original);
 
-        // ✅ ObjectName único por producto (evita colisiones)
         String objectName = "products/" + productId + "/" + UUID.randomUUID() + "-" + safeName;
-
-        // ✅ Token real para URL pública
         String token = UUID.randomUUID().toString();
 
         BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, objectName)
@@ -262,9 +259,7 @@ public class ProductImageServiceImpl implements ProductImageService {
                 + "?alt=media&token=" + token;
     }
 
-    // Opcional: limpia caracteres raros para evitar rutas feas
     private String sanitizeFilename(String name) {
-        // deja letras, números, punto, guion, guion bajo
         return name.replaceAll("[^a-zA-Z0-9._-]", "_");
     }
 
