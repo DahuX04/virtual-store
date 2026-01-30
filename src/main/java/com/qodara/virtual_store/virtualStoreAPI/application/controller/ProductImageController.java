@@ -26,7 +26,7 @@ public class ProductImageController {
 
     @Operation(summary = "Get all product images by product id")
     @GetMapping("/product/{id}")
-    public ResponseEntity<ApiResponse<List<ProductImageResponseDTO>>> getProductImagesByProductId(int id) {
+    public ResponseEntity<ApiResponse<List<ProductImageResponseDTO>>> getProductImagesByProductId(@PathVariable int id) {
         var res = productImageService.getProductImagesByProductId(id);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
@@ -59,9 +59,13 @@ public class ProductImageController {
 
     @Operation(summary = "Create multiple product images")
     @PostMapping(value = "/product-images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<List<ProductImageResponseDTO>>> saveProductImages(List<MultipartFile> files, String name, int product_id) {
+    public ResponseEntity<ApiResponse<List<ProductImageResponseDTO>>> saveProductImages(
+            @RequestPart("files") List<MultipartFile> files,
+            @RequestParam("name") String name,
+            @RequestParam("productId") int productId
+    ) {
         try {
-            var res = productImageService.saveProductImages(files, name, product_id);
+            var res = productImageService.saveProductImages(files, name, productId);
             return new ResponseEntity<>(res, HttpStatus.CREATED);
         } catch (Exception e) {
             var res = new ApiResponse<List<ProductImageResponseDTO>>("Error saving product images: " + e.getMessage(), Estatus.ERROR, null);

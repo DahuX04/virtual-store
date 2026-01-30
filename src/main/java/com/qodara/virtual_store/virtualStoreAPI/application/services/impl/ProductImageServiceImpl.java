@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -180,6 +181,7 @@ public class ProductImageServiceImpl implements ProductImageService {
     public ApiResponse<Void> deleteProductImage(int id) {
         Optional<ProductImage> productImageOptional = productImageRepository.findById(id);
         if (productImageOptional.isPresent()) {
+            deleteFromFirebaseByUrl(productImageOptional.get().getUrl());
             productImageRepository.deleteById(id);
             return new ApiResponse<>("Product Image deleted successfully", Estatus.SUCCESS, null);
         } else {
@@ -198,6 +200,37 @@ public class ProductImageServiceImpl implements ProductImageService {
         }
     }
 
+
+    private String extractObjectNameFromFirebaseUrl(String url) {
+        // Busca el segmento "/o/" y corta hasta el "?"
+        int oIndex = url.indexOf("/o/");
+        if (oIndex == -1) {
+            throw new IllegalArgumentException("URL no válida de Firebase Storage: falta '/o/'");
+        }
+
+        int start = oIndex + 3; // después de "/o/"
+        int end = url.indexOf("?", start);
+        if (end == -1) end = url.length();
+
+        String encodedObjectName = url.substring(start, end);
+        return URLDecoder.decode(encodedObjectName, StandardCharsets.UTF_8);
+    }
+
+    private void deleteFromFirebaseByUrl(String publicUrl) {
+        String objectName = extractObjectNameFromFirebaseUrl(publicUrl);
+
+        Blob blob = StorageClient.getInstance().bucket().get(objectName);
+
+        if (blob == null) {
+            // El archivo no existe en el bucket (o el nombre no coincide)
+            throw new IllegalStateException("No se encontró el archivo en Firebase Storage: " + objectName);
+        }
+
+        boolean deleted = blob.delete();
+        if (!deleted) {
+            throw new IllegalStateException("No se pudo eliminar el archivo en Firebase Storage: " + objectName);
+        }
+    }
 
     private String generatePublicUrl(MultipartFile file) throws Exception {
         String fileName = file.getOriginalFilename();

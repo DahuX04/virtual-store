@@ -5,6 +5,7 @@ import com.qodara.virtual_store.shared.model.enums.Estatus;
 import com.qodara.virtual_store.virtualStoreAPI.application.dto.request.BrandRequestDTO;
 import com.qodara.virtual_store.virtualStoreAPI.application.dto.request.ProductRequestDTO;
 import com.qodara.virtual_store.virtualStoreAPI.application.dto.response.BrandResponseDTO;
+import com.qodara.virtual_store.virtualStoreAPI.application.dto.response.PageResponseDTO;
 import com.qodara.virtual_store.virtualStoreAPI.application.dto.response.ProductResponseDTO;
 import com.qodara.virtual_store.virtualStoreAPI.application.services.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -72,6 +73,19 @@ public class ProductController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteProduct(@PathVariable int id) {
         var res = productService.deleteProduct(id);
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Get all products paged")
+    @GetMapping("/paged")
+    public ResponseEntity<ApiResponse<PageResponseDTO<ProductResponseDTO>>> getAllProductsPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir,
+            @RequestParam(required = false) String q
+    ) {
+        var res = productService.getProductsPaged(page, size, sortBy, sortDir, q);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
