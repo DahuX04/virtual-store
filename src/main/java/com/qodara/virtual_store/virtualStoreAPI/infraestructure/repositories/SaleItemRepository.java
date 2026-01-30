@@ -9,4 +9,6 @@ public interface SaleItemRepository extends CrudRepository<SaleItem, Integer> {
     void deleteBySale_Id(int saleId);
 
     List<SaleItem> findSaleItemBySale_Id(int saleId);
+
+    boolean existsSaleItemsByProduct_Id(int productId);
 }

@@ -11,5 +11,6 @@ public interface SaleItemService {
     ApiResponse<List<SaleItemResponseDTO>> getAllSaleItems(int saleId);
     ApiResponse<List<SaleItemResponseDTO>> createSaleItems(List<SaleItemsRequestDTO> saleItemRequestDTOs);
     ApiResponse<List<SaleItemResponseDTO>> updateSaleItems(int id, List<SaleItemsRequestDTO> saleItemRequestDTOs);
+    ApiResponse<Boolean> existSaleItemByProductId(int productId);
 
 }

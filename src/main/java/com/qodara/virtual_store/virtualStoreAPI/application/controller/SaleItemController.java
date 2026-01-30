@@ -46,4 +46,11 @@ public class SaleItemController {
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
+    @Operation(summary = "Exist sale items by product id")
+    @GetMapping("/exist/{productId}")
+    public ResponseEntity<ApiResponse<Boolean>> existSaleItemsBySaleId(@PathVariable int productId) {
+        var res = saleItemService.existSaleItemByProductId(productId);
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
+
 }

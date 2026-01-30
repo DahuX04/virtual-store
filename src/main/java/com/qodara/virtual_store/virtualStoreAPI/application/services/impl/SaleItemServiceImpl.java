@@ -117,4 +117,9 @@ public class SaleItemServiceImpl implements SaleItemService {
         return new ApiResponse<>("Sale items retrieved successfully", Estatus.SUCCESS,saleItemResponseDTOList);
     }
 
+    public ApiResponse<Boolean> existSaleItemByProductId(int productId){
+        boolean exists = saleItemRepository.existsSaleItemsByProduct_Id(productId);
+        return new ApiResponse<>("Existence check completed", Estatus.SUCCESS, exists);
+    }
+
 }

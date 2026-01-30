@@ -1,6 +1,7 @@
 package com.qodara.virtual_store.virtualStoreAPI.application.services.impl;
 
 import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobInfo;
 import com.google.firebase.cloud.StorageClient;
 import com.qodara.virtual_store.shared.model.dto.response.ApiResponse;
 import com.qodara.virtual_store.shared.model.enums.Estatus;
@@ -20,9 +21,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ProductImageServiceImpl implements ProductImageService {
@@ -74,7 +73,7 @@ public class ProductImageServiceImpl implements ProductImageService {
         if (ProductOptional.isEmpty()){
             return new ApiResponse<>("Product not found", Estatus.ERROR, null);
         }
-        String publicUrl = generatePublicUrl(file);
+        String publicUrl = generatePublicUrl(file, ProductOptional.get().getId());
 
         ProductImage productImage = ProductImage.builder()
                 .name(name)
@@ -97,7 +96,7 @@ public class ProductImageServiceImpl implements ProductImageService {
         List<ProductImage> productImageList = new ArrayList<>();
         int i = 1;
         for (MultipartFile file : files) {
-            String publicUrl = generatePublicUrl(file);
+            String publicUrl = generatePublicUrl(file, product.getId());
             String imageName = name + " " + i++;
             ProductImage productImage = ProductImage.builder()
                     .name(imageName)
@@ -127,7 +126,7 @@ public class ProductImageServiceImpl implements ProductImageService {
         }
 
         ProductImage productImage = productImageOptional.get();
-        String publicUrl = generatePublicUrl(file);
+        String publicUrl = generatePublicUrl(file, productOptional.get().getId());
 
         productImage.setName(name);
         productImage.setUrl(publicUrl);
@@ -146,7 +145,7 @@ public class ProductImageServiceImpl implements ProductImageService {
         }
 
         ProductImage productImage = productImageOptional.get();
-        String publicUrl = generatePublicUrl(file);
+        String publicUrl = generatePublicUrl(file, productImage.getProduct().getId());
 
         productImage.setUrl(publicUrl);
 
@@ -237,15 +236,36 @@ public class ProductImageServiceImpl implements ProductImageService {
         }
     }
 
-    private String generatePublicUrl(MultipartFile file) throws Exception {
-        String fileName = file.getOriginalFilename();
-        StorageClient.getInstance().bucket().create(fileName, file.getInputStream(), file.getContentType());
+    private String generatePublicUrl(MultipartFile file, long productId) throws Exception {
+        String original = file.getOriginalFilename() != null ? file.getOriginalFilename() : "image";
+        String safeName = sanitizeFilename(original);
 
-        Blob blob = StorageClient.getInstance().bucket().get(fileName);
+        // ✅ ObjectName único por producto (evita colisiones)
+        String objectName = "products/" + productId + "/" + UUID.randomUUID() + "-" + safeName;
 
-        return "https://firebasestorage.googleapis.com/v0/b/"+ bucketName + "/o/"
-                + URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString())
-                + "?alt=media&token=" + blob.getGeneration();
+        // ✅ Token real para URL pública
+        String token = UUID.randomUUID().toString();
+
+        BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, objectName)
+                .setContentType(file.getContentType())
+                .setMetadata(Map.of("firebaseStorageDownloadTokens", token))
+                .build();
+
+        // Subida
+        StorageClient.getInstance()
+                .bucket()
+                .getStorage()
+                .create(blobInfo, file.getBytes());
+
+        return "https://firebasestorage.googleapis.com/v0/b/" + bucketName + "/o/"
+                + URLEncoder.encode(objectName, StandardCharsets.UTF_8)
+                + "?alt=media&token=" + token;
+    }
+
+    // Opcional: limpia caracteres raros para evitar rutas feas
+    private String sanitizeFilename(String name) {
+        // deja letras, números, punto, guion, guion bajo
+        return name.replaceAll("[^a-zA-Z0-9._-]", "_");
     }
 
 }
