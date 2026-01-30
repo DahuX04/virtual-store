@@ -6,6 +6,8 @@ import com.qodara.virtual_store.virtualStoreAPI.application.dto.request.BrandReq
 import com.qodara.virtual_store.virtualStoreAPI.application.dto.request.CategoryRequestDTO;
 import com.qodara.virtual_store.virtualStoreAPI.application.dto.response.BrandResponseDTO;
 import com.qodara.virtual_store.virtualStoreAPI.application.dto.response.CategoryResponseDTO;
+import com.qodara.virtual_store.virtualStoreAPI.application.dto.response.PageResponseDTO;
+import com.qodara.virtual_store.virtualStoreAPI.application.dto.response.ProductResponseDTO;
 import com.qodara.virtual_store.virtualStoreAPI.application.services.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -59,5 +61,18 @@ public class CategoryController {
     public ResponseEntity<ApiResponse<Void>> deleteBrand(@PathVariable int id) {
         var res = categoryService.deleteCategory(id);
         return new ResponseEntity<>(res, res.getStatus() == Estatus.SUCCESS ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+    }
+
+    @Operation(summary = "Get all categories paged")
+    @GetMapping("/paged")
+    public ResponseEntity<ApiResponse<PageResponseDTO<CategoryResponseDTO>>> getAllProductsPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir,
+            @RequestParam(required = false) String q
+    ) {
+        var res = categoryService.getCategoriesPaged(page, size, sortBy, sortDir, q);
+        return new ResponseEntity<>(res, HttpStatus.OK);
     }
 }

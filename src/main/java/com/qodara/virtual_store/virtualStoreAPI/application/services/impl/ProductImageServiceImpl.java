@@ -194,12 +194,14 @@ public class ProductImageServiceImpl implements ProductImageService {
         List<ProductImage> productImageList = productImageRepository.findByProduct_Id(id);
         if (!productImageList.isEmpty()) {
             for(ProductImage p : productImageList){
-                deleteFromFirebaseByUrl(p.getUrl());
+                if(p.getUrl() != null) {
+                    deleteFromFirebaseByUrl(p.getUrl());
+                }
             }
             productImageRepository.deleteAll(productImageList);
             return new ApiResponse<>("Product Images deleted successfully", Estatus.SUCCESS, null);
         } else {
-            return new ApiResponse<>("No Product Images found for the given Product ID", Estatus.ERROR, null);
+            return new ApiResponse<>("No Product Images found for the given Product ID", Estatus.SUCCESS, null);
         }
     }
 

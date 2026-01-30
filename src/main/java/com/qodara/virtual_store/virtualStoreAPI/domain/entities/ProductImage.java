@@ -20,7 +20,7 @@ public class ProductImage {
     @Column(name = "name", length = 100, nullable = false)
     private String name;
 
-    @Column(name = "url", length = 200, nullable = false)
+    @Column(name = "url", nullable = false)
     private String url;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

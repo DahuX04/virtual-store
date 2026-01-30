@@ -6,11 +6,17 @@ import com.qodara.virtual_store.shared.model.enums.Estatus;
 import com.qodara.virtual_store.virtualStoreAPI.application.dto.request.BrandRequestDTO;
 import com.qodara.virtual_store.virtualStoreAPI.application.dto.request.CategoryRequestDTO;
 import com.qodara.virtual_store.virtualStoreAPI.application.dto.response.CategoryResponseDTO;
+import com.qodara.virtual_store.virtualStoreAPI.application.dto.response.PageResponseDTO;
+import com.qodara.virtual_store.virtualStoreAPI.application.dto.response.ProductResponseDTO;
 import com.qodara.virtual_store.virtualStoreAPI.application.services.CategoryService;
 import com.qodara.virtual_store.virtualStoreAPI.domain.entities.Brand;
 import com.qodara.virtual_store.virtualStoreAPI.domain.entities.Category;
+import com.qodara.virtual_store.virtualStoreAPI.domain.entities.Product;
 import com.qodara.virtual_store.virtualStoreAPI.infraestructure.repositories.CategoryRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -76,6 +82,33 @@ public class CategoryServiceImpl implements CategoryService {
         } else {
             return new ApiResponse<>("Category not found", Estatus.ERROR, null);
         }
+    }
+
+    public ApiResponse<PageResponseDTO<CategoryResponseDTO>> getCategoriesPaged(int page, int size, String sortBy, String sortDir, String q) {
+        int safePage = Math.max(page, 0);
+        int safeSize = Math.min(Math.max(size, 1), 50);
+
+        Sort.Direction direction = "asc".equalsIgnoreCase(sortDir) ? Sort.Direction.ASC : Sort.Direction.DESC;
+        PageRequest pageable = PageRequest.of(safePage, safeSize, Sort.by(direction, sortBy));
+
+        Page<Category> result = (q == null || q.isBlank())
+                ? categoryRepository.findAll(pageable)
+                : categoryRepository.search(q.trim(), pageable);
+
+        List<CategoryResponseDTO> content = result.getContent().stream()
+                .map(p -> modelMapper.map(p, CategoryResponseDTO.class))
+                .toList();
+
+        PageResponseDTO<CategoryResponseDTO> pageDto = new PageResponseDTO<>(
+                content,
+                result.getNumber(),
+                result.getSize(),
+                result.getTotalElements(),
+                result.getTotalPages(),
+                result.isLast()
+        );
+
+        return new ApiResponse<>("Categories found", Estatus.SUCCESS, pageDto);
     }
 
     private void validateCategory(Category category) {
