@@ -90,7 +90,7 @@ public class CategoryImageController {
     }
 
     @Operation(summary = "Delete category image by category id")
-    @DeleteMapping("/category/{categoryId}")
+    @DeleteMapping("/delete/category/{categoryId}")
     public ResponseEntity<ApiResponse<Void>> deleteCategoryImageByCategoryId(@PathVariable int categoryId) {
         var res = categoryImageService.deleteCategoryImageByCategoryId(categoryId);
         return new ResponseEntity<>(res, res.getStatus() == com.qodara.virtual_store.shared.model.enums.Estatus.SUCCESS ? HttpStatus.OK : HttpStatus.NOT_FOUND);

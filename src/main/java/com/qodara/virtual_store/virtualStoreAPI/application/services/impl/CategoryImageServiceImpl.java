@@ -46,7 +46,7 @@ public class CategoryImageServiceImpl implements CategoryImageService {
             CategoryImageResponseDTO responseDTO = modelMapper.map(categoryImage, CategoryImageResponseDTO.class);
             return new ApiResponse<>("Product Image retrieved successfully", Estatus.SUCCESS, responseDTO);
         } else {
-            return new ApiResponse<>("Product Image not found", Estatus.ERROR, null);
+            return new ApiResponse<>("Product Image not found", Estatus.SUCCESS, null);
         }
     }
 
@@ -138,7 +138,7 @@ public class CategoryImageServiceImpl implements CategoryImageService {
     public ApiResponse<Void> deleteCategoryImageByCategoryId (int categoryId) {
         Optional<CategoryImage> categoryImageOptional = categoryImageRepository.findByCategory_Id(categoryId);
         if (categoryImageOptional.isEmpty()) {
-            return new ApiResponse<>("Category Image not found", Estatus.ERROR, null);
+            return new ApiResponse<>("Category Image not found", Estatus.SUCCESS, null);
         }
         deleteFromFirebaseByUrl(categoryImageOptional.get().getUrl());
         categoryImageRepository.delete(categoryImageOptional.get());

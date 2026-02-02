@@ -4,6 +4,8 @@ import com.qodara.virtual_store.shared.model.dto.response.ApiResponse;
 import com.qodara.virtual_store.shared.model.enums.Estatus;
 import com.qodara.virtual_store.virtualStoreAPI.application.dto.request.BrandRequestDTO;
 import com.qodara.virtual_store.virtualStoreAPI.application.dto.response.BrandResponseDTO;
+import com.qodara.virtual_store.virtualStoreAPI.application.dto.response.CategoryResponseDTO;
+import com.qodara.virtual_store.virtualStoreAPI.application.dto.response.PageResponseDTO;
 import com.qodara.virtual_store.virtualStoreAPI.application.services.BrandService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -65,4 +67,18 @@ public class BrandController {
         var res = brandService.deleteBrand(id);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
+
+    @Operation(summary = "Get all Brand paged")
+    @GetMapping("/paged")
+    public ResponseEntity<ApiResponse<PageResponseDTO<BrandResponseDTO>>> getAllBrandsPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir,
+            @RequestParam(required = false) String q
+    ) {
+        var res = brandService.getBrandPaged(page, size, sortBy, sortDir, q);
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
+
 }
