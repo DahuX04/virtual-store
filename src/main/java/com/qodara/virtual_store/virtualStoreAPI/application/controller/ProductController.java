@@ -2,13 +2,12 @@ package com.qodara.virtual_store.virtualStoreAPI.application.controller;
 
 import com.qodara.virtual_store.shared.model.dto.response.ApiResponse;
 import com.qodara.virtual_store.shared.model.enums.Estatus;
-import com.qodara.virtual_store.virtualStoreAPI.application.dto.request.BrandRequestDTO;
 import com.qodara.virtual_store.virtualStoreAPI.application.dto.request.ProductRequestDTO;
-import com.qodara.virtual_store.virtualStoreAPI.application.dto.response.BrandResponseDTO;
 import com.qodara.virtual_store.virtualStoreAPI.application.dto.response.PageResponseDTO;
 import com.qodara.virtual_store.virtualStoreAPI.application.dto.response.ProductResponseDTO;
 import com.qodara.virtual_store.virtualStoreAPI.application.services.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -76,6 +75,7 @@ public class ProductController {
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
+    @SecurityRequirements
     @Operation(summary = "Get all products paged")
     @GetMapping("/paged")
     public ResponseEntity<ApiResponse<PageResponseDTO<ProductResponseDTO>>> getAllProductsPaged(

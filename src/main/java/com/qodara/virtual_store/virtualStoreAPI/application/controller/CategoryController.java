@@ -10,9 +10,11 @@ import com.qodara.virtual_store.virtualStoreAPI.application.dto.response.PageRes
 import com.qodara.virtual_store.virtualStoreAPI.application.dto.response.ProductResponseDTO;
 import com.qodara.virtual_store.virtualStoreAPI.application.services.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -63,6 +65,7 @@ public class CategoryController {
         return new ResponseEntity<>(res, res.getStatus() == Estatus.SUCCESS ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
     }
 
+    @SecurityRequirements
     @Operation(summary = "Get all categories paged")
     @GetMapping("/paged")
     public ResponseEntity<ApiResponse<PageResponseDTO<CategoryResponseDTO>>> getAllProductsPaged(

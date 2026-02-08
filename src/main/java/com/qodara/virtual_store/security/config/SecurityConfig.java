@@ -71,7 +71,14 @@ public class SecurityConfig {
                             "/v3/api-docs/**",
                             "/error",
                             "/favicon.ico",
-                            "/api/v1/GaldPerfecto/ficha-catastral/data-qr/**"
+                            "/api/v1/virtualStore/product-images/id/**",
+                            "/api/v1/virtualStore/product-images/product/**",
+                            "/api/v1/virtualStore/product-images/all/**",
+                            "/api/v1/virtualStore/category-images/category/**",
+                            "/api/v1/virtualStore/category-images/all/**",
+                            "/api/v1/virtualStore/products/paged/**",
+                            "/api/v1/virtualStore/categories/paged/**"
+
                     )
                     .permitAll();
 

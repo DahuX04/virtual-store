@@ -4,12 +4,15 @@ import com.qodara.virtual_store.shared.model.dto.response.ApiResponse;
 import com.qodara.virtual_store.virtualStoreAPI.application.dto.response.CategoryImageResponseDTO;
 import com.qodara.virtual_store.virtualStoreAPI.application.services.CategoryImageService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Tag(name = "CategoryImage", description = "Category Image Controller")
 @RestController
@@ -19,7 +22,7 @@ public class CategoryImageController {
     public CategoryImageController(CategoryImageService categoryImageService) {
         this.categoryImageService = categoryImageService;
     }
-
+    @SecurityRequirements
     @Operation(summary = "Get category image by category id")
     @GetMapping("/category/{id}")
     public ResponseEntity<ApiResponse<CategoryImageResponseDTO>> getCategoryImageByCategoryId(@PathVariable int id) {
@@ -27,9 +30,10 @@ public class CategoryImageController {
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
+    @SecurityRequirements
     @Operation(summary = "Get all category images")
     @GetMapping("/all")
-    public ResponseEntity<ApiResponse<java.util.List<CategoryImageResponseDTO>>> getAllCategoryImages() {
+    public ResponseEntity<ApiResponse<List<CategoryImageResponseDTO>>> getAllCategoryImages() {
         var res = categoryImageService.getAllCategoryImages();
         return new ResponseEntity<>(res, HttpStatus.OK);
     }

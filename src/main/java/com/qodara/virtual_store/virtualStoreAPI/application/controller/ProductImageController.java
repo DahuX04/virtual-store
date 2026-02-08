@@ -5,6 +5,7 @@ import com.qodara.virtual_store.shared.model.enums.Estatus;
 import com.qodara.virtual_store.virtualStoreAPI.application.dto.response.ProductImageResponseDTO;
 import com.qodara.virtual_store.virtualStoreAPI.application.services.ProductImageService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,6 +25,7 @@ public class ProductImageController {
         this.productImageService = productImageService;
     }
 
+    @SecurityRequirements
     @Operation(summary = "Get all product images by product id")
     @GetMapping("/product/{id}")
     public ResponseEntity<ApiResponse<List<ProductImageResponseDTO>>> getProductImagesByProductId(@PathVariable int id) {
@@ -31,6 +33,7 @@ public class ProductImageController {
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
+    @SecurityRequirements
     @Operation(summary = "Get all product images")
     @GetMapping("/all")
     public ResponseEntity<ApiResponse<List<ProductImageResponseDTO>>> getAllProductImages() {
@@ -38,8 +41,9 @@ public class ProductImageController {
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
+    @SecurityRequirements
     @Operation(summary = "Get product image by id")
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<ApiResponse<ProductImageResponseDTO>> getProductImageById(int id) {
         ApiResponse<ProductImageResponseDTO> response = productImageService.getProductImageById(id);
         return new ResponseEntity<>(response, response.getStatus() == Estatus.SUCCESS ? HttpStatus.OK : HttpStatus.NOT_FOUND);

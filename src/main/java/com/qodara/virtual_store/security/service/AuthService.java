@@ -71,16 +71,25 @@ public class AuthService implements IAuthService {
         Optional<Account> accountOptional = accountRepository.findById(id);
         if (accountOptional.isEmpty()) {
             return new ApiResponse<>("Account not found", Estatus.ERROR, null);
-        } else {
-            Account account = accountOptional.get();
-            validateUpdatePassword(request);
-            modelMapper.map(request, account);
-            account.setPassword(passwordEncoder.encode(request.getPassword()));
-            account.setRole(roleRepository.getRoleById(account.getRole().getId()));
-            accountRepository.save(account);
-            RegisteredUserResponseDto response = modelMapper.map(account, RegisteredUserResponseDto.class);
-            return new ApiResponse<>("Password updated successfully", Estatus.SUCCESS, response);
         }
+
+        Account account = accountOptional.get();
+        boolean matches = passwordEncoder.matches(
+                request.getCurrentPassword(),
+                account.getPassword()
+        );
+
+        if (!matches) {
+            return new ApiResponse<>("Current password is incorrect", Estatus.ERROR, null);
+        }
+
+        validateUpdatePassword(request);
+        modelMapper.map(request, account);
+        account.setPassword(passwordEncoder.encode(request.getPassword()));
+        account.setRole(roleRepository.getRoleById(account.getRole().getId()));
+        accountRepository.save(account);
+        RegisteredUserResponseDto response = modelMapper.map(account, RegisteredUserResponseDto.class);
+        return new ApiResponse<>("Password updated successfully", Estatus.SUCCESS, response);
     }
 
     @Override
