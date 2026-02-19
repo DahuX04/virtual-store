@@ -9,6 +9,10 @@ import com.qodara.virtual_store.virtualStoreAPI.application.services.ProductServ
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +48,19 @@ public class ProductController {
     @GetMapping("/brand/{brandId}")
     public ResponseEntity<ApiResponse<List<ProductResponseDTO>>> getProductByBrand(@PathVariable int brandId) {
         ApiResponse<List<ProductResponseDTO>> response = productService.getProductsByBrand(brandId);
+        return new ResponseEntity<>(response, response.getStatus() == Estatus.SUCCESS ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+    }
+
+    @SecurityRequirements
+    @Operation(summary = "Get product by Category")
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<ApiResponse<Page<ProductResponseDTO>>> getProductByCategory(@PathVariable int categoryId,
+                                                                                      @RequestParam(defaultValue = "0") int page,
+                                                                                      @RequestParam(defaultValue = "12") int size,
+                                                                                      @RequestParam(defaultValue = "id") String sortBy,
+                                                                                      @RequestParam(defaultValue = "desc") String sortDir) {
+        Pageable pageable = PageRequest.of(page,size, Sort.by(Sort.Direction.fromString(sortDir), sortBy));
+        ApiResponse<Page<ProductResponseDTO>> response = productService.getProductsByCategory(categoryId, pageable);
         return new ResponseEntity<>(response, response.getStatus() == Estatus.SUCCESS ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 

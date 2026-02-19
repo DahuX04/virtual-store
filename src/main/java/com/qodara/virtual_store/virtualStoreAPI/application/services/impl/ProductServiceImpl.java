@@ -18,6 +18,7 @@ import com.qodara.virtual_store.virtualStoreAPI.infraestructure.repositories.Pro
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -66,6 +67,12 @@ public class ProductServiceImpl implements ProductService {
         List<ProductResponseDTO> productResponseDTOs = products.stream()
                 .map(product -> modelMapper.map(product, ProductResponseDTO.class))
                 .toList();
+        return new ApiResponse<>("Products found", Estatus.SUCCESS, productResponseDTOs);
+    }
+
+    public ApiResponse<Page<ProductResponseDTO>> getProductsByCategory(int categoryId, Pageable pageable){
+        Page<Product> products = productRepository.findByCategory_Id(categoryId, pageable);
+        Page<ProductResponseDTO> productResponseDTOs = products.map(product -> modelMapper.map(product, ProductResponseDTO.class));
         return new ApiResponse<>("Products found", Estatus.SUCCESS, productResponseDTOs);
     }
 

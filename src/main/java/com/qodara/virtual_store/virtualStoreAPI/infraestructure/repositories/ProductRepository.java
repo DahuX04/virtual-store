@@ -37,4 +37,5 @@ public interface ProductRepository extends CrudRepository<Product, Integer>, Jpa
   """)
     Page<Product> search(@Param("q") String q, Pageable pageable);
 
+    Page<Product> findByCategory_Id (int categoryId, Pageable pageable);
 }
