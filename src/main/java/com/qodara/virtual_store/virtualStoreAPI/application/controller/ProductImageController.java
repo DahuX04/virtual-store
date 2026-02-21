@@ -51,7 +51,9 @@ public class ProductImageController {
 
     @Operation(summary = "Create product image")
     @PostMapping(value = "/product-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<ProductImageResponseDTO>> saveProductImage(MultipartFile file, String name, int product_id) {
+    public ResponseEntity<ApiResponse<ProductImageResponseDTO>> saveProductImage(@RequestPart("file") MultipartFile file,
+                                                                                 @RequestParam("name") String name,
+                                                                                 @RequestParam("product_id") int product_id) {
         try {
             var res = productImageService.saveProductImage(file, name, product_id);
             return new ResponseEntity<>(res, HttpStatus.CREATED);

@@ -77,6 +77,7 @@ public class SecurityConfig {
                             "/api/v1/virtualStore/category-images/category/**",
                             "/api/v1/virtualStore/category-images/all/**",
                             "/api/v1/virtualStore/products/paged/**",
+                            "/api/v1/virtualStore/products/id/**",
                             "/api/v1/virtualStore/products/category/**",
                             "/api/v1/virtualStore/categories/paged/**"
 

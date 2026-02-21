@@ -30,8 +30,9 @@ public class ProductController {
         this.productService = productService;
     }
 
+    @SecurityRequirements
     @Operation(summary = "Get product by id")
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<ApiResponse<ProductResponseDTO>> getProductById(@PathVariable int id) {
         ApiResponse<ProductResponseDTO> response = productService.getProductById(id);
         return new ResponseEntity<>(response, response.getStatus() == Estatus.SUCCESS ? HttpStatus.OK : HttpStatus.NOT_FOUND);
